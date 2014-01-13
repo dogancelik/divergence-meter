@@ -1,0 +1,22 @@
+{
+  "name": "divergence-meter",
+  "version": "0.1.0",
+  "authors": [
+    "Doğan Çelik"
+  ],
+  "description": "Divergence meter for Steins;Gate fans",
+  "main": "divmeter.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dogancelik/divergence-meter.git"
+  },
+  "keywords": [
+    "divergence meter",
+    "clock"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "test"
+  ]
+}
