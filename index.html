@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Divergence Meter</title>
+  <style>
+    body { background: url(bg.jpg) no-repeat fixed top right; }
+    #fixed { position: fixed; bottom: 5%; right: 5%; font-size: 1.5em; }
+  </style>
+  <script>
+    DivmeterInitConfig = {
+      height: '90px',
+      prefix: 'https://raw.github.com/dogancelik/divergence-meter/master/img/',
+      suffix: '.jpg',
+      time: '2014-01-11T06:17:18.171Z'
+    };
+  </script>
+  <script src="https://raw.github.com/dogancelik/divergence-meter/master/divmeter.js"></script>
+</head>
+<body>
+  <div id="fixed">
+    <a href="javascript:history.back();">Go back</a> - <a href="view-source:.">View source</a><br>
+    <a href="https://github.com/dogancelik/divergence-meter">View project page</a>
+  </div>
+
+  <h2>1. Static time</h2>
+  <divmeter data-height="120px" data-time="2014-01-11T01:12:59.371Z"></divmeter>
+
+  <h2>2. Dynamic time</h2>
+  <div class="divmeter" data-height="90px" data-time="local"></div>
+
+  <h2>3. Dynamic time (<span id="stops">stops in 3 seconds</span>)</h2>
+  <div class="divmeter" data-height="90px" data-time="local"></div>
+  <script>
+    setTimeout(function() {
+      Divmeter.getDivmeterById(document.querySelectorAll("div.divmeter")[1].id).stop();
+    }, 3000);
+  </script>
+
+  <h2>4. Static time (uses default config)</h2>
+  <div class="divmeter"></div>
+
+  <h2>5. Static time (using JavaScript)</h2>
+  <div id="dm"></div>
+  <script>
+    new Divmeter({
+      element: document.getElementById("dm"),
+      time: '2014-01-11T09:11:11.200Z',
+      height: '90px'
+    });
+  </script>
+
+  <h2>6. Dynamic time (using JavaScript, appears in 3 seconds)</h2>
+  <div id="dm2">Loading...</div>
+  <script>
+    setTimeout(function() {
+      document.getElementById("dm2").innerHTML = "";
+      new Divmeter({
+        element: document.getElementById("dm2"),
+        time: new Date(),
+        height: '90px'
+      });
+    }, 3000);
+  </script>
+</body>
+</html>
