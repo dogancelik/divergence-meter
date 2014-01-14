@@ -26,14 +26,12 @@ If you change `data-time` to `local`, your divergence meter will automatically u
 
 ### 2. Add with JavaScript
 ```js
-<script>
-  var meter = new DivMeter({
-    'height': '100px',
-    'element': document.getElementById()
-  });
+var meter = new DivMeter({
+  'height': '100px',
+  'element': document.getElementById()
+});
 
-  meter.time()
-</script>
+meter.time('2014-01-11T01:12:59.371Z');
 ```
 
 ## Configuration
@@ -103,8 +101,12 @@ The initialized meters look like this:
 
 You can access a divergence meter's methods using `Divmeter.getDivmeterById` method:
 ```js
-var el = document.getElementById('divmeter-1389544582397');
-var divmeter = Divmeter.getDivmeterById(el);
+var el = document.getElementById('divmeter-1389544582397'),
+  divmeter = Divmeter.getDivmeterById(el);
+
+  divmeter.time('local');
+  divmeter.start(); // Start the clock if it's "local"
+  divmeter.stop();
 ```
 
 ## To do:
