@@ -2,9 +2,10 @@
 <html>
 <head>
   <title>Divergence Meter</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
   <style>
-    body { background: url(bg.jpg) no-repeat fixed top right; }
-    #fixed { position: fixed; bottom: 5%; right: 5%; font-size: 1.5em; }
+    body { background: url(bg.jpg) no-repeat fixed center right; }
+    h3 .label { padding: .15em .25em; display: inline-block; vertical-align: top; }
   </style>
   <script>
     DivmeterInitConfig = {
@@ -17,49 +18,104 @@
   <script src="https://raw.github.com/dogancelik/divergence-meter/master/divmeter.js"></script>
 </head>
 <body>
-  <div id="fixed">
-    <a href="javascript:history.back();">Go back</a> - <a href="view-source:.">View source</a><br>
-    <a href="https://github.com/dogancelik/divergence-meter">View project page</a>
+  <div class="container">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <li><a href="javascript:history.back();">Go back</a></li>
+          <li><a href="view-source:.">View source</a></li>
+          <li><a href="https://github.com/dogancelik/divergence-meter">View project page</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>1. Static time <span class="label label-success">HTML only</span></h3>
+        <divmeter data-height="120px" data-time="2014-01-11T01:12:59.371Z" data-type="static"></divmeter>
+
+        <h3>2. Live time <span class="label label-success">HTML only</span></h3>
+        <div class="divmeter" data-height="90px" data-time="local" data-type="live"></div>
+
+        <h3>3. Live time <small>stops in 3 seconds</small> <span class="label label-warning">with JavaScript</span></h3>
+        <div class="divmeter" data-height="90px" data-time="local"></div>
+        <script>
+          setTimeout(function() {
+            Divmeter.getDivmeterById(document.querySelectorAll("div.divmeter")[1].id).stop();
+          }, 3000);
+        </script>
+
+        <h3>4. Live time <small>uses default config</small> <span class="label label-success">HTML only</span></h3>
+        <div class="divmeter"></div>
+
+        <h3>5. Static time <span class="label label-warning">with JavaScript</span></h3>
+        <div id="dm"></div>
+        <script>
+          new Divmeter({
+            element: document.getElementById("dm"),
+            time: '2014-01-11T09:11:11.200Z',
+            height: '90px',
+            type: 'static'
+          });
+        </script>
+
+        <h3>6. Static time <small>appears in 3 seconds</small> <span class="label label-warning">with JavaScript</span></h3>
+        <div id="dm2">Loading...</div>
+        <script>
+          setTimeout(function() {
+            document.getElementById("dm2").innerHTML = "";
+            new Divmeter({
+              element: document.getElementById("dm2"),
+              time: new Date(),
+              height: '90px',
+              type: 'static'
+            });
+          }, 3000);
+        </script>
+
+        <h3>7. Clock countdown <span class="label label-warning">with JavaScript</span></h3>
+        <div id="dm3"></div>
+        <script>
+          var dm3 = new Divmeter({
+            element: document.getElementById('dm3'),
+            time: '2014-01-11T00:00:10.000+0200',
+            height: '90px',
+            type: 'live',
+            clock: function (currTime, origTime) {
+              var newTime = new Date(currTime - 1000);
+              console.log(newTime.getDate());
+              if (newTime.getDate() == 10) {
+                dm3.stop();
+                return currTime;
+              }
+              return newTime;
+            }
+          });
+        </script>
+
+        <h3>8. Clock countdown <small>fast</small> <span class="label label-warning">with JavaScript</span></h3>
+        <div id="dm4"></div>
+        <script>
+          var dm4 = new Divmeter({
+            element: document.getElementById('dm4'),
+            time: '2014-01-11T00:10:10.000+0200',
+            height: '90px',
+            type: 'live',
+            interval: 25,
+            clock: function (currTime, origTime) {
+              var newTime = new Date(currTime - 1000);
+              console.log(newTime.getDate());
+              if (newTime.getDate() == 10) {
+                dm4.stop();
+                return currTime;
+              }
+              return newTime;
+            }
+          });
+        </script>
+
+      </div>
+    </div>
   </div>
-
-  <h2>1. Static time</h2>
-  <divmeter data-height="120px" data-time="2014-01-11T01:12:59.371Z"></divmeter>
-
-  <h2>2. Dynamic time</h2>
-  <div class="divmeter" data-height="90px" data-time="local"></div>
-
-  <h2>3. Dynamic time (<span id="stops">stops in 3 seconds</span>)</h2>
-  <div class="divmeter" data-height="90px" data-time="local"></div>
-  <script>
-    setTimeout(function() {
-      Divmeter.getDivmeterById(document.querySelectorAll("div.divmeter")[1].id).stop();
-    }, 3000);
-  </script>
-
-  <h2>4. Static time (uses default config)</h2>
-  <div class="divmeter"></div>
-
-  <h2>5. Static time (using JavaScript)</h2>
-  <div id="dm"></div>
-  <script>
-    new Divmeter({
-      element: document.getElementById("dm"),
-      time: '2014-01-11T09:11:11.200Z',
-      height: '90px'
-    });
-  </script>
-
-  <h2>6. Dynamic time (using JavaScript, appears in 3 seconds)</h2>
-  <div id="dm2">Loading...</div>
-  <script>
-    setTimeout(function() {
-      document.getElementById("dm2").innerHTML = "";
-      new Divmeter({
-        element: document.getElementById("dm2"),
-        time: new Date(),
-        height: '90px'
-      });
-    }, 3000);
-  </script>
 </body>
 </html>
