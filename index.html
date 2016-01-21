@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Divergence Meter</title>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
   <style>
@@ -8,7 +9,7 @@
     h3 .label { padding: .15em .25em; display: inline-block; vertical-align: top; }
   </style>
   <script>
-    DivmeterInitConfig = {
+    var DivmeterInitConfig = {
       height: '90px',
       prefix: 'https://raw.github.com/dogancelik/divergence-meter/master/img/',
       suffix: '.jpg',
@@ -83,7 +84,6 @@
             type: 'live',
             clock: function (currTime, origTime) {
               var newTime = new Date(currTime - 1000);
-              console.log(newTime.getDate());
               if (newTime.getDate() == 10) {
                 dm3.stop();
                 return currTime;
@@ -104,7 +104,6 @@
             interval: 25,
             clock: function (currTime, origTime) {
               var newTime = new Date(currTime - 1000);
-              console.log(newTime.getDate());
               if (newTime.getDate() == 10) {
                 dm4.stop();
                 return currTime;
