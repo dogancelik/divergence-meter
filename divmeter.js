@@ -13,14 +13,34 @@
     document.head.appendChild(style);
   }
 
+  function createConfig (defaultConfig, userConfig, datasetConfig) {
+    var newConfig = {};
+    for (var key in defaultConfig) newConfig[key] = defaultConfig[key];
+    for (var key in userConfig) newConfig[key] = userConfig[key];
+    if (datasetConfig != null) for (var key in datasetConfig) newConfig[key] = datasetConfig[key];
+    return newConfig;
+  }
+
   function preloadImages (config) {
     for (var i = 0; i < 11; i++) {
       var img = document.createElement('img');
-      if (i === 10) {
-        continue;
-      }
+      if (i === 10) continue;
       img.src = config.prefix + i + config.suffix;
+      img.onload = function () { img.remove(); };
     }
+  }
+
+  function appendImages (element, config) {
+    var imgs = [];
+    for (var i = 1; i <= 8; i++) {
+      var img = document.createElement('img');
+      img.src = config.prefix + (i !== 2 ? '0' : '11') + config.suffix;
+      if (config.width) img.style.width = config.width;
+      if (config.height) img.style.height = config.height;
+      element.appendChild(img);
+      imgs.push(img);
+    }
+    return imgs;
   }
 
   function pad (number, length) {
@@ -31,66 +51,41 @@
     return str;
   }
 
-  function watchElements () {
+  function createOnLoad () {
     window.document.addEventListener('DOMContentLoaded', function () {
       var els = document.querySelectorAll(ELEMENT_QUERY);
-
       for (var i = 0; i < els.length; i++) {
-        var config = {};
-
-        config.element = els[i];
-        if (els[i].dataset.prefix) {
-          config.prefix = els[i].dataset.prefix;
-        }
-        if (els[i].dataset.suffix) {
-          config.suffix = els[i].dataset.suffix;
-        }
-        if (els[i].dataset.width) {
-          config.width = els[i].dataset.width;
-        }
-        if (els[i].dataset.height) {
-          config.height = els[i].dataset.height;
-        }
-        if (els[i].dataset.time) {
-          config.time = els[i].dataset.time;
-        }
-
+        var config = createConfig(Divmeter.defaultConfig, { element: els[i] }, els[i].dataset);
         new Divmeter(config);
       }
-
     }, false);
-
   }
 
   var Divmeter = function (config) {
 
-    var _originalTime = null, // Used for tracking local time
-        _time = null, // Used for actually tracking _date time
-        _clockId = null,
-        _clockFn = function () {
-          if (_originalTime === 'local') {
-            _time = new Date();
-          }
-          else {
-            _time = new Date(_time.getTime() + 1000);
-          }
-          updateClock();
-        };
+    var _originalTime = null; // Used for tracking local time
+    var _time = null; // Used for actually tracking _date time
+
+    // Clock
+    var _clockId = null;
+    var _clockInner = function () {
+      _time = _originalTime === 'local' ? new Date() : _clockOuter(_time, _originalTime);
+      updateClock();
+    };
+    var _clockOuter = config.clock != null ? config.clock : function (time, origTime) { return new Date(time.getTime() + 1000); };
+    var _clockInterval = config.interval != null ? config.interval : 1000;
 
     function setTime (time) {
       _originalTime = time;
-      _time = time === "local" ? new Date() : new Date(Date.parse(time));
+      _time = time === 'local' ? new Date() : new Date(Date.parse(time));
       return this;
     }
 
     function startTime () {
-      if (_originalTime === "local") {
-        updateClock();
-        _clockId = setInterval(_clockFn, 1000);
+      if (config.type === 'live') {
+        _clockId = setInterval(_clockInner, _clockInterval);
       }
-      else {
-        updateClock();
-      }
+      updateClock();
     }
 
     function updateClock () {
@@ -107,24 +102,19 @@
       imgs[7].src = config.prefix + sec[1] + config.suffix;
     }
 
+    // Combine defaultConfig + config
     if (typeof config === 'undefined') {
-      // Use the default config
       config = Divmeter.defaultConfig;
     } else if (typeof config === 'object') {
-      // Override default config
       var newConfig = {};
-      for (var prop in Divmeter.defaultConfig) {
-        newConfig[prop] = Divmeter.defaultConfig[prop];
-      }
-      for (var prop in config) {
-        newConfig[prop] = config[prop];
-      }
+      for (var prop in Divmeter.defaultConfig) newConfig[prop] = Divmeter.defaultConfig[prop];
+      for (var prop in config) newConfig[prop] = config[prop];
       config = newConfig;
     } else {
-      // Only accept object for init
-      throw new Error('Divmeter: You may only initialize DivMeter with an object.');
+      throw new Error('Divmeter: You may only initialize Divmeter with an object.');
     }
 
+    // We check if variable contains more than one element
     var isElementSingle = null,
         element = null;
     if (typeof config.element === 'string') {
@@ -149,35 +139,12 @@
       }
       return;
     } else {
-      // Stop if element is already initialized
-      if (element.classList.contains(DIVMETER_COMPLETE)) {
-        return;
-      }
+      if (element.classList.contains(DIVMETER_COMPLETE)) return; // Stop if element is already initialized
 
-      // Set a unique ID
-      element.id = 'divmeter-' + new Date().getTime();
-
-      // Add a class
+      element.id = 'divmeter-' + Date.now(); // Unique ID is required for finding Divmeters later
       element.classList.add('divmeter');
-
       preloadImages(config);
-
-      // Initialize images (0.000000 state)
-      var imgs = [];
-      for (var i = 1; i <= 8; i++) {
-        var img = document.createElement('img');
-        img.src = config.prefix + (i !== 2 ? '0' : '11') + config.suffix;
-        if (config.width) {
-          img.style.width = config.width;
-        }
-        if (config.height) {
-          img.style.height = config.height;
-        }
-        element.appendChild(img);
-        imgs.push(img);
-      }
-
-      // Set time and start clock if local
+      var imgs = appendImages(element, config); // Initialize images (0.000000 state)
       setTime(config.time);
       startTime();
 
@@ -202,25 +169,31 @@
         }
       };
 
-      // Add a reference to the global object
-      _divmeters[element.id] = ret;
-
+      _divmeters[element.id] = ret; // Add a reference for getDivmeterById
       return ret;
     }
   };
 
-  Divmeter.getDivmeterById = function (id) {
-    return _divmeters[id];
+  Divmeter.getDivmeterById = function (id) { return _divmeters[id]; };
+  Divmeter.getById = Divmeter.getDivmeterById;
+
+
+  Divmeter.createOnLoad = typeof window.DivmeterAutoInit !== 'undefined' ? window.DivmeterAutoInit : true;
+  Divmeter.defaultConfig = window.DivmeterInitConfig || {
+    element: ELEMENT_QUERY,
+    time: 'local',
+    prefix: './img/',
+    suffix: '.jpg',
+    height: '90px',
+    clock: null,
+    interval: 1000,
+    type: 'live'
   };
 
-  // Set the defaults
-  Divmeter.defaultConfig = window.DivmeterInitConfig || {
-    'element': ELEMENT_QUERY,
-    'time': 'local',
-    'prefix': './img/',
-    'suffix': '.jpg',
-    'height': '90px'
-  };
+  if (!Divmeter.defaultConfig.hasOwnProperty('type')) {
+    window.console.warn('Divmeter.defaultConfig.type is empty! I will assume \u201Clive\u201D');
+    Divmeter.defaultConfig.type = 'live';
+  }
   if (!Divmeter.defaultConfig.hasOwnProperty('time')) {
     window.console.warn('Divmeter.defaultConfig.time is empty! I will assume \u201Clocal\u201D.');
     Divmeter.defaultConfig.time = 'local';
@@ -235,8 +208,12 @@
   if (!Divmeter.defaultConfig.hasOwnProperty('height')) {
     window.console.warn('Divmeter.defaultConfig.height is empty!');
   }
+  if (!Divmeter.defaultConfig.hasOwnProperty('interval')) {
+    window.console.warn('Divmeter.defaultConfig.interval is empty! I will assume \u201C1000 ms\u201D');
+    Divmeter.defaultConfig.interval = 1000;
+  }
 
   window.Divmeter = Divmeter;
+  if (Divmeter.createOnLoad) createOnLoad();
   registerStyle();
-  watchElements();
 })(window, document);
