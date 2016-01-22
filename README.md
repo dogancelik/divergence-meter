@@ -7,7 +7,10 @@ Create [divergence meters](http://steins-gate.wikia.com/wiki/Divergence_Meter) i
 Divmeter now defaults to *type* `live`, so if you are using a "static" Divmeter, you need to set `type: 'static'` in your Divmeter settings (or `data-type="static"` in HTML).
 
 ## How to install
-Clone this repo or do `bower install divergence-meter`
+
+* [Download the latest ZIP file](archive/master.zip)
+* `bower install divergence-meter`
+* Clone the repo
 
 ## How to use
 
