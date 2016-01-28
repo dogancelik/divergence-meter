@@ -87,7 +87,7 @@ You can initiate *Divmeter* with an object with these properties:
 This property sets height of each image.
 
 **Default value:** `90px`  
-**Accepted values:** height CSS
+**Accepted values:** CSS height, `fluid`
 
 <hr>
 
@@ -95,7 +95,7 @@ This property sets height of each image.
 
 This property sets width of each image.
 
-**Accepted values:** width CSS
+**Accepted values:** CSS width, `fluid`
 
 <hr>
 

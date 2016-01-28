@@ -37,6 +37,10 @@
       img.src = config.prefix + (i !== 2 ? '0' : '11') + config.suffix;
       if (config.width) img.style.width = config.width;
       if (config.height) img.style.height = config.height;
+      if (config.width === 'fluid' || config.height === 'fluid') {
+        img.style.width = '12.5%';
+        img.style.height = 'auto';
+      }
       element.appendChild(img);
       imgs.push(img);
     }

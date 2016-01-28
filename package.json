@@ -1,6 +1,6 @@
 {
   "name": "divergence-meter",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Doğan Çelik",
   "description": "Divergence meter for Steins;Gate fans",
   "main": "divmeter.js",
