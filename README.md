@@ -131,9 +131,6 @@ Clock tick interval in milliseconds
 **Default value:** `1000`  
 **Accepted values:** Any integer
 
-This line is also a separate paragraph, but...
-This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
-
 ### Change default values
 
 Use `window.DivmeterInitConfig` to set the initial values for `window.Divmeter.defaultConfig`. `DivmeterInitConfig` is
