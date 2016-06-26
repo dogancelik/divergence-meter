@@ -1,16 +1,20 @@
 {
   "name": "divergence-meter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Doğan Çelik",
   "description": "Divergence meter for Steins;Gate fans",
   "main": "divmeter.js",
+  "scripts": {
+    "prepublish": "uglifyjs --screw-ie8 -o divmeter.min.js divmeter.js"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dogancelik/divergence-meter.git"
+    "url": "https://bitbucket.org/dogancelik/divergence-meter.git"
   },
   "keywords": [
     "divergence meter",
-    "clock"
+    "clock",
+    "anime"
   ],
   "license": "MIT"
 }
